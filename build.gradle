@@ -66,32 +66,34 @@ jar {
 }
 
 publishing {
-	def repoUsername = findProperty("repository_username")
-	def repoPassword = findProperty("repository_password")
-
-	if (!repoUsername || !repoPassword) {
-		repoPassword = System.getProperty("repository_username")
-		password = System.getProperty("repository_password")
-		if (!repoUsername || !repoPassword) {
-			println "Missing credentials for repository! Skipping publishing."
-			return
-		}
-	}
-
-	repositories {
-		maven {
-			url = uri("https://repo.skullian.com/releases/")
-			name = "Skullian"
-			credentials {
-				username = repoUsername
-				password = repoPassword
-			}
-		}
-	}
+	configureRepository(repositories)
 
 	publications {
 		mavenJava(MavenPublication) {
 			from components.java
 		}
+	}
+}
+
+def configureRepository(RepositoryHandler repositories) {
+	def user = project.findProperty('repository_username') ?: System.getenv('repository_username')
+	def pw = project.findProperty('repository_password') ?: System.getenv('repository_password')
+
+	if (user != null && pw != null) {
+		repositories.maven {
+			name = 'Skullian'
+			url = 'https://repo.skullian.com/releases/'
+			credentials {
+				username = user
+				password = pw
+			}
+		}
+		return
+	}
+
+	println 'Using repository without credentials.'
+	repositories.maven {
+		name = 'Skullian'
+		url = 'https://repo.skullian.com/releases/'
 	}
 }

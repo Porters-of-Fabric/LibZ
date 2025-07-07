@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    modApi ("net.libz:libz:${libz_version}") {
+    modApi ("net.libz:LibZ:${libz_version}") {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 }
