@@ -1,4 +1,4 @@
-name: publish
+name: Publish
 
 on:
   workflow_dispatch
@@ -7,17 +7,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: set up JDK 21
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt-hotspot'
-          java-version: 21
-          cache: 'gradle'
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: make gradle wrapper executable
-        run: chmod +x ./gradlew
-      - name: build files
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Build files
         run: ./gradlew build
 
       - name: Publish to API
