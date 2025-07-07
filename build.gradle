@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.7-SNAPSHOT'
+	id 'fabric-loom' version '1.10-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -21,9 +21,9 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	// Jackson
-	include modImplementation ('com.fasterxml.jackson.core:jackson-core:2.15.2')
-	include modImplementation ('com.fasterxml.jackson.core:jackson-databind:2.15.2')
-	include modImplementation ('com.fasterxml.jackson.core:jackson-annotations:2.15.2')
+	include modImplementation ('com.fasterxml.jackson.core:jackson-core:2.19.1')
+	include modImplementation ('com.fasterxml.jackson.core:jackson-databind:2.19.1')
+	include modImplementation ('com.fasterxml.jackson.core:jackson-annotations:2.19.1')
     // Cloth
     modImplementation("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
@@ -33,7 +33,7 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 	
-	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:14.1.760"
+	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:17.0.807"
 	modCompileOnly "dev.emi:emi-fabric:1.1.13+1.21.1"
 }
 
@@ -65,8 +65,30 @@ jar {
 	}
 }
 
-// configure the maven publication
 publishing {
+	def repoUsername = findProperty("repository_username")
+	def repoPassword = findProperty("repository_password")
+
+	if (!repoUsername || !repoPassword) {
+		repoPassword = System.getProperty("repository_username")
+		password = System.getProperty("repository_password")
+		if (!repoUsername || !repoPassword) {
+			println "Missing credentials for repository! Skipping publishing."
+			return
+		}
+	}
+
+	repositories {
+		maven {
+			url = uri("https://repo.skullian.com/releases/")
+			name = "Skullian"
+			credentials {
+				username = repoUsername
+				password = repoPassword
+			}
+		}
+	}
+
 	publications {
 		mavenJava(MavenPublication) {
 			from components.java

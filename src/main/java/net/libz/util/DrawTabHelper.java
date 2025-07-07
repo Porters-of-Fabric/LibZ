@@ -11,6 +11,7 @@ import net.libz.init.ConfigInit;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -53,14 +54,15 @@ public class DrawTabHelper {
                         boolean isFirstTab = i == 0;
                         boolean isSelectedTab = inventoryTab.isSelectedScreen(screenClass.getClass());
 
-                        int textureX = isFirstTab ? 24 : 72;
+                        float textureX = isFirstTab ? 24 : 72;
                         if (isSelectedTab) {
                             textureX -= 24;
                         }
 
-                        context.drawTexture(LibzClient.tabTexture, xPos, isSelectedTab ? y - 23 : y - 21, textureX, 0, 24, isSelectedTab ? 27 : isFirstTab ? 25 : 21);
+                        // default is 256, 256 for width and height, which was what the old method did in 1.21
+                        context.drawTexture(RenderLayer::getGuiTextured, LibzClient.tabTexture, xPos, isSelectedTab ? y - 23 : y - 21, textureX, 0f, 24, isSelectedTab ? 27 : isFirstTab ? 25 : 21, 256, 256);
                         if (inventoryTab.getTexture() != null) {
-                            context.drawTexture(inventoryTab.getTexture(), xPos + 5, y - 16, 0, 0, 14, 14, 14, 14);
+                            context.drawTexture(RenderLayer::getGuiTextured, inventoryTab.getTexture(), xPos + 5, y - 16, 0, 0, 14, 14, 14, 14);
                         } else if (inventoryTab.getItemStack(client) != null) {
                             context.drawItem(inventoryTab.getItemStack(client), xPos + 4, y - 17);
                         }
